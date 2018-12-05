@@ -201,7 +201,7 @@
 				raids4.clearLayers();
 				raids5.clearLayers();
 				getRaids();
-				getQuestPoke();
+                                <?php if (MAP_SHOW_QUESTS) { echo ('getQuestPoke();'); } ?>
 				timeOut=setTimeout("updateRaids()",60000);
 			}
 					

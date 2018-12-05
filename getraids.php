@@ -31,7 +31,6 @@
       AND raids.end_time < NOW() + INTERVAL " . MAP_RAID_END_TIME_OFFSET_HOURS . " hour
     GROUP BY  gyms.gym_name
     ORDER BY  raids.end_time ASC";
-
   $rows = array();
   try {
 
