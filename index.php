@@ -218,6 +218,10 @@
 						start_time = new Date((data[i].start_time).replace(/-/g,"/")),
 						end_time = new Date((data[i].end_time).replace(/-/g,"/")),
 						remaining = Math.floor(data[i].t_left / 60),
+                                                min_cp    = data[i].min_cp,
+                                                max_cp    = data[i].max_cp,
+                                                min_weather_cp    = data[i].min_weather_cp,
+                                                max_weather_cp    = data[i].max_weather_cp,
 						interest = data[i].interest,
 						raiders = parseInt(data[i].count),
 						extras = parseInt(data[i].total_extras);
@@ -225,6 +229,11 @@
 					var gym_info = "<div style='font-size: 18px; color: #0078A8;'>"+ gym_name +"</div>";
 						gym_info += "<div style='font-size: 12px;'><a href='https://www.google.com/maps/search/?api=1&query=" + data[i].lat + "," + data[i].lon + "' target='_blank' title='Click to find " + gym_name + " on Google Maps'>" + address + "</a></div>&nbsp;<br />";
 					var pokemon = "<div style='font-size: 18px;'><strong>" + pokemon_name + "</strong></div>";
+                                        var pokemon_info = "" ;
+                                        if ( min_cp > 9 ) {
+                                            pokemon_info = min_cp ? "<div style='font-size: 12px;'><strong>" + min_cp + "/" + max_cp + "</strong> (" + min_weather_cp + "/" + max_weather_cp  + ")</div>" : "";
+                                        };
+
 					
 					var times = "<div style='font-size: 14px;" + ((remaining < 20) ? " color: red;" : "") + "'>";
 					times += (level == "X") ? "<strong>" + start_time.toLocaleDateString() + "</strong><br>" : "";
@@ -248,7 +257,9 @@
 						attending += ((extras) ? (raiders + extras) : raiders);
 						attending += "</div>";
 					}
-					
+
+                                        mraiders =  ((extras) ? (raiders + extras) + ' Raider(s)' : raiders + ' Raider(s)');
+
 					var raid_footer = "";
 					if (level == "X") {
 						raid_footer += "<div style='font-size: 12px;'><?php if (defined('MAP_EX_RAID_FOOTER') && !empty(MAP_EX_RAID_FOOTER)) { echo('<br>');echo(MAP_EX_RAID_FOOTER); } ?></div>";
@@ -258,7 +269,7 @@
 
 					var raidID = "<div style='font-size: 10px;'><br/>[Raid ID: " + data[i].id + "]</div>";
 					
-					var details = "<div style='text-align: center; margin-left: auto; margin-right: auto;'>"+ gym_info + pokemon + stars + times + attending + raid_footer + raidID + "</div>";
+					var details = "<div style='text-align: center; margin-left: auto; margin-right: auto;'>"+ gym_info + pokemon + stars + pokemon_info + times + attending + raid_footer + raidID + "</div>";
 					
 					if (level == 5) {
 						if (pokedex_id == 9995) {
@@ -269,15 +280,18 @@
 						}
 						marker.bindPopup(details, {maxWidth: '400'});
 						raids5.addLayer(marker);
-					} else if (level == 4) {
-						if (pokedex_id == 9994) {
-							var marker = new L.Marker(location, {icon: new eggIcon({iconUrl: 'icons/egg_L4.png' })}, { title: name });	
-						} else {
+                                                if (interest) { marker.bindTooltip(mraiders,{ permanent: true, direction: 'right'  } );   raids5.addLayer(marker);}
+     
+     					} else if (level == 4) {
+     						if (pokedex_id == 9994) {
+     							var marker = new L.Marker(location, {icon: new eggIcon({iconUrl: 'icons/egg_L4.png' })}, { title: name });	
+     						} else {
 							pokemonIcon[i] = new raidIcon({iconUrl: 'icons<?php echo("/" . MAP_ICONPACK); ?>/id_' + pokedex_id +'.png'})
 							var marker = new L.Marker(location, {icon: pokemonIcon[i] }, { title: name });
 						}
-						marker.bindPopup(details, {maxWidth: '400'});
-						raids4.addLayer(marker);
+        					marker.bindPopup(details, {maxWidth: '400'});
+        					raids4.addLayer(marker);
+                                                if (interest) { marker.bindTooltip(mraiders,{ permanent: true, direction: 'right'  } );   raids4.addLayer(marker);}
 					} else if (level == 3) {
 						if (pokedex_id == 9993) {
 							var marker = new L.Marker(location, {icon: new eggIcon({iconUrl: 'icons/egg_L3.png' })}, { title: name });	
@@ -287,6 +301,7 @@
 						}
 						marker.bindPopup(details, {maxWidth: '400'});
 						raids3.addLayer(marker);
+						if (interest) { marker.bindTooltip(mraiders,{ permanent: true, direction: 'right'  } );   raids3.addLayer(marker);}
 					} else if (level == 2) {
 						if (pokedex_id == 9992) {
 							var marker = new L.Marker(location, {icon: new eggIcon({iconUrl: 'icons/egg_L2.png' })}, { title: name });	
@@ -296,6 +311,8 @@
 						}
 						marker.bindPopup(details, {maxWidth: '400'});
 						raids2.addLayer(marker);
+						if (interest) { marker.bindTooltip(mraiders,{ permanent: true, direction: 'right'  } );   raids2.addLayer(marker);}
+					} else if (level == 2) {
 					} else if (level == 1){
 						if (pokedex_id == 9991) {
 							var marker = new L.Marker(location, {icon: new eggIcon({iconUrl: 'icons/egg_L1.png' })}, { title: name });	
@@ -305,6 +322,7 @@
 						}
 						marker.bindPopup(details, {maxWidth: '400'});
 						raids1.addLayer(marker);
+						if (interest) { marker.bindTooltip(mraiders,{ permanent: true, direction: 'right'  } );   raids1.addLayer(marker);}
 					} else {
 						//Level is X 
 						if (remaining > 44) {
@@ -315,6 +333,7 @@
 						}
 						marker.bindPopup(details, {maxWidth: '400'});
 						raidsX.addLayer(marker);
+                                                if (interest) { marker.bindTooltip(mraiders,{ permanent: true, direction: 'right'  } );   raidsX.addLayer(marker);}
 					}
 					
 				  }
